@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>BLE-TEST</title>
+    <style>
+      canvas {
+        max-height: 350px;
+      }
+      #int8 {
+        color: rgb(0, 145, 0);
+      }
+      #unit8-index0 {
+        color: rgba(0, 204, 255);
+      }
+      #unit8-index1 {
+        color: rgba(153, 102, 255);
+      }
+      #unit16 {
+        color: rgba(0, 102, 255);
+      }
+      #counter {
+        text-align: center;
+        width: 50%;
+      }
+      .flexBar {
+        display: flex;
+        width: 50vw;
+        background-color: #ddd;
+      }
+      #Progress_Status {
+        width: 80vw;
+        position: static;
+        /* background-color: #ddd; */
+      }
+      #beforProgress_Status {
+        width: 20vw;
+        border-right: 1px dashed black;
+        background-color: #ddd;
+      }
+      #afterProgress_Status {
+        width: 20vw;
+        background-color: #ddd;
+        border-left: 1px dashed black;
+      }
+      #myprogressBar {
+        width: 0%;
+        height: 30px;
+        background-color: #797979;
+      }
+      #beforprogressBar {
+        width: 100%;
+        height: 30px;
+        background-color: #797979;
+      }
+      #afterprogressBar {
+        width: 0%;
+        height: 30px;
+      }
+      #mainDeviceProgressBar {
+        width: 50vw;
+        display: flex;
+        background-color: #ddd;
+      }
+      #deviceProgress_Status {
+        width: 40vw;
+        /* background-color: #ddd; */
+      }
+      #deviceProgressBar::before {
+        content: '';
+        display: block;
+        position: relative;
+        left: 0vw;
+        bottom: 0px;
+        width: 0;
+        height: 30px;
+        border-right: 1px dashed rgb(0, 0, 0);
+      }
+      #deviceProgressBar::after {
+        content: '';
+        display: block;
+        position: relative;
+        left: 33.2vw;
+        bottom: 0px;
+        width: 0;
+        top: -30px;
+        height: 30px;
+        border-right: 1px dashed rgb(0, 0, 0);
+      }
+      #deviceProgressBar {
+        width: 0%;
+        height: 30px;
+        background-color: hsl(120, 100%, 45%);
+        transition: background-color 0.5s linear;
+      }
+      #befor-ProgressBar {
+        width: 10vw;
+      }
+      #beforDeviceProgressBar {
+        width: 100%;
+        height: 30px;
+        background-color: hsl(120, 100%, 45%);
+        transition: background-color 0.5s linear;
+        /* background-color: rgb(255, 0, 0); */
+      }
+      #after-ProgressBar {
+        width: 10vw;
+      }
+      #afterDeviceProgressBar {
+        width: 0%;
+        height: 30px;
+        background-color: hsl(0, 100%, 50%);
+        transition: background-color 0.5s linear;
+        /* background-color: rgb(255, 0, 0); */
+      }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
+  </head>
+  <body>
+    <div>BLE TEST APP</div>
+    <div class="bottons">
+      <button id="scan" onclick="scan()">scan</button>
+      <button id="start" onclick="startNotification()" disabled>start</button>
+      <button id="stop" onclick="stopNotification()" disabled>stop</button>
+      <button id="disconnect" onclick="disconnect()" disabled>disconnect</button>
+    </div>
+    <canvas id="myChart" width="400" height="400"></canvas>
+    <ul>
+      <li id="int8"></li>
+      <li id="unit8-index0"></li>
+      <li id="unit8-index1"></li>
+      <li id="unit16"></li>
+    </ul>
+    <br />
+
+    <div id="counter">0</div>
+    <div class="flexBar">
+      <div id="beforProgress_Status">
+        <div id="beforprogressBar"></div>
+      </div>
+      <div id="Progress_Status">
+        <div id="myprogressBar"></div>
+      </div>
+      <div id="afterProgress_Status">
+        <div id="afterprogressBar"></div>
+      </div>
+    </div>
+    <br />
+
+    <button onclick="update()" id="startCouting">Start</button>
+    <button onclick="stopCouting()" id="stopCouting" disabled>Stop</button>
+    <button onclick="reset()">Reset</button>
+    <br />
+    <br />
+    <div id="mainDeviceProgressBar">
+      <div id="befor-ProgressBar">
+        <div id="beforDeviceProgressBar"></div>
+      </div>
+      <div id="deviceProgress_Status">
+        <div id="deviceProgressBar"></div>
+      </div>
+      <div id="after-ProgressBar">
+        <div id="afterDeviceProgressBar"></div>
+      </div>
+    </div>
+    <br />
+
+    <button onclick="setStartPoint()" id="stopCouting"><<</button>
+    <button onclick="setEndPoint()">>></button>
+    <button onclick="resetCalibration()">Reset</button>
+    <script type="text/javascript">
+      const getDeviceInfo = async () => {
+        let option = {
+          acceptAllDevices: true,
+
+          optionalServices: ['0000fff0-0000-1000-8000-00805f9b34fb'],
+        };
+        try {
+          let device = await navigator.bluetooth.requestDevice(option);
+          bluetoothDeviceDetected = device;
+          await bluetoothDeviceDetected.gatt.connect();
+          console.log('connected');
+          let customService = await bluetoothDeviceDetected.gatt.getPrimaryService(
+            '0000fff0-0000-1000-8000-00805f9b34fb',
+          );
+          console.log('we get the service');
+          characteristics = await customService.getCharacteristic(
+            '0000fff4-0000-1000-8000-00805f9b34fb',
+          );
+          // let characteristicFirstValue = await customService.getCharacteristic(
+          //   '0000fff5-0000-1000-8000-00805f9b34fb',
+          // );
+          // // let resetEnergyExpended = Uint8Array.of(1);
+          // // await characteristicFirstValue.writeValue(resetEnergyExpended);
+          // let testingfirstvalue = await characteristicFirstValue.readValue();
+          // console.log(testingfirstvalue.getInt8(), testingfirstvalue.getUint8());
+          // console.log(testingfirstvalue);
+          // let encoder = new TextEncoder('utf-8');
+          // console.log('encoder: ' + encoder.encode(testingfirstvalue));
+          // let decoder = new TextDecoder('utf-8');
+          // console.log('decoder: ' + decoder.decode(testingfirstvalue));
+          // console.log(testingfirstvalue);
+          // let characteristic = await customService.getCharacteristics();
+          // console.log(characteristic);
+          console.log('we get the characteristics');
+          characteristics.addEventListener('characteristicvaluechanged', handelChangedValue);
+          console.log('add the event listener');
+          console.log('now you cant start the notifications');
+          document.getElementById('start').disabled = false;
+          document.getElementById('scan').disabled = true;
+          document.getElementById('disconnect').disabled = false;
+        } catch (err) {
+          console.log('error: ' + err);
+        }
+      };
+
+      const isWebBluetoothAvailable = () => {
+        if (!navigator.bluetooth) {
+          console.log('Web Bluetooth is not available');
+          return false;
+        }
+        return true;
+      };
+
+      const getConnection = () => {
+        isWebBluetoothAvailable() && getDeviceInfo();
+      };
+
+      let isStart = false;
+      let calValue;
+      let startPoint;
+      let endPoint;
+      let testClpration;
+      let testStartPoint = 0;
+      let testEndPoint;
+      let startNewCalValue;
+      let endNewCalValue;
+      let position = 2048;
+      let startPosition;
+      let endPosition = 2048;
+      let widthArray = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+      const handelChangedValue = event => {
+        let value = event.target.value;
+
+        calValue = (((value.getUint8(0) & 0x07) * 256 + value.getUint8(1)) * 100) / 2048;
+        testClpration = (value.getUint8(0) & 0x07) * 256 + value.getUint8(1);
+
+        const deviceProgressBar = document.getElementById('deviceProgressBar');
+
+        let temp = startNewCalValue ? startNewCalValue : -1;
+        let temp2 = endNewCalValue ? endNewCalValue : -1;
+        startNewCalValue = ((testClpration - testStartPoint) * 100) / startPosition;
+
+        endNewCalValue = ((testClpration - testStartPoint) * 100) / endPosition;
+
+        if (
+          startNewCalValue - temp > 0.55 ||
+          temp - startNewCalValue > 0.55 ||
+          endNewCalValue - temp2 > 0.55 ||
+          temp2 - endNewCalValue > 0.55
+        ) {
+          if (isStart) {
+            deviceProgressBar.style.width = startNewCalValue + '%';
+            if (startNewCalValue > 101) {
+              if (startNewCalValue > 120) {
+                startNewCalValue = 120;
+              }
+              deviceProgressBar.style.width = 100 + '%';
+              afterDeviceProgressBar.style.width = (startNewCalValue - 100) * 5 + '%';
+            } else {
+              afterDeviceProgressBar.style.width = 0 + '%';
+            }
+            if (startNewCalValue < 0) {
+              deviceProgressBar.style.width = 0 + '%';
+              beforDeviceProgressBar.style.width =
+                100 - startNewCalValue * -5 < 0 ? 0 + '%' : +100 - startNewCalValue * -5 + '%';
+            } else {
+              beforDeviceProgressBar.style.width = 100 + '%';
+            }
+          } else {
+            deviceProgressBar.style.width = endNewCalValue + '%';
+            if (endNewCalValue > 101) {
+              if (endNewCalValue > 120) {
+                endNewCalValue = 120;
+              }
+              deviceProgressBar.style.width = 100 + '%';
+              afterDeviceProgressBar.style.width = (endNewCalValue - 100) * 5 + '%';
+            } else {
+              afterDeviceProgressBar.style.width = 0 + '%';
+            }
+            if (endNewCalValue < 0) {
+              deviceProgressBar.style.width = 0 + '%';
+              beforDeviceProgressBar.style.width =
+                100 - endNewCalValue * -5 < 0 ? 0 + '%' : 100 - startNewCalValue * -5 + '%';
+            } else {
+              beforDeviceProgressBar.style.width = 100 + '%';
+            }
+          }
+        }
+
+        if (!startPoint && !endPoint) {
+          deviceProgressBar.style.width = calValue + '%';
+        }
+        let barWidth = deviceProgressBar.style.width;
+        barWidth = barWidth.substring(0, barWidth.length - 1);
+        let trackingDif = Math.abs(Math.round(Number(barWidth) - width));
+        const green = 'hsl(120, 100%, 45%)';
+        const lightGreen = 'hsl(90, 100%, 45%)';
+        const yallow = 'hsl(60, 100%, 45%)';
+        const orange = 'hsl(30, 100%, 50%)';
+        const red = 'hsl(0, 100%, 50%)';
+        if (trackingDif >= 0 && trackingDif <= 2) {
+          deviceProgressBar.style.backgroundColor = green;
+        } else if (trackingDif >= 3 && trackingDif <= 5) {
+          deviceProgressBar.style.backgroundColor = lightGreen;
+        } else if (trackingDif >= 6 && trackingDif <= 8) {
+          deviceProgressBar.style.backgroundColor = yallow;
+        } else if (trackingDif >= 9 && trackingDif <= 11) {
+          deviceProgressBar.style.backgroundColor = orange;
+        } else {
+          deviceProgressBar.style.backgroundColor = red;
+        }
+        let beforDeviceProgressBarWidth = beforDeviceProgressBar.style.width;
+
+        beforDeviceProgressBarWidth = beforDeviceProgressBarWidth.substring(
+          0,
+          beforDeviceProgressBarWidth.length - 1,
+        );
+
+        if (Math.round(Number(beforDeviceProgressBarWidth)) < 85) {
+          beforDeviceProgressBar.style.backgroundColor = red;
+        } else {
+          beforDeviceProgressBar.style.backgroundColor = deviceProgressBar.style.backgroundColor;
+        }
+
+        let afterDeviceProgressBarWidth = afterDeviceProgressBar.style.width;
+
+        afterDeviceProgressBarWidth = afterDeviceProgressBarWidth.substring(
+          0,
+          afterDeviceProgressBarWidth.length - 1,
+        );
+
+        if (Math.round(Number(afterDeviceProgressBarWidth)) > 15) {
+          afterDeviceProgressBar.style.backgroundColor = red;
+          deviceProgressBar.style.backgroundColor = red;
+          beforDeviceProgressBar.style.backgroundColor = red;
+        } else {
+          afterDeviceProgressBar.style.backgroundColor = deviceProgressBar.style.backgroundColor;
+        }
+
+        myChart.data.labels.push(myChart.data.labels.length + 1);
+        myChart.data.datasets[0].data.push(value.getInt8(1));
+        myChart.data.datasets[1].data.push(value.getUint8(0));
+        myChart.data.datasets[2].data.push(value.getUint8(1));
+        myChart.data.datasets[3].data.push(value.getInt16());
+
+        if (myChart.data.labels.length == 250) {
+          myChart.data.labels.shift();
+          myChart.data.datasets[0].data.shift();
+          myChart.data.datasets[1].data.shift();
+          myChart.data.datasets[2].data.shift();
+          myChart.data.datasets[3].data.shift();
+        }
+        myChart.update();
+
+        let int8Max = Math.max(...myChart.data.datasets[0].data);
+        let int8Min = Math.min(...myChart.data.datasets[0].data);
+        let unit8Index0Max = Math.max(...myChart.data.datasets[1].data);
+        let unit8Index0Min = Math.min(...myChart.data.datasets[1].data);
+        let unit8Index1Max = Math.max(...myChart.data.datasets[2].data);
+        let unit8Index1Min = Math.min(...myChart.data.datasets[2].data);
+        let unit16Max = Math.max(...myChart.data.datasets[3].data);
+        let unit16Min = Math.min(...myChart.data.datasets[3].data);
+
+        document.getElementById('int8').innerHTML = `int8 : Max:${int8Max} ,Min:${int8Min}`;
+        document.getElementById(
+          'unit8-index0',
+        ).innerHTML = `unit8-index0 : Max:${unit8Index0Max} ,Min:${unit8Index0Min}`;
+        document.getElementById(
+          'unit8-index1',
+        ).innerHTML = `unit8-index1 : Max:${unit8Index1Max} ,Min:${unit8Index1Min}`;
+        document.getElementById('unit16').innerHTML = `int16 : Max:${unit16Max} ,Min:${unit16Min}`;
+      };
+      const scan = async e => {
+        try {
+          await getConnection(e);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      const startNotification = async () => {
+        try {
+          await characteristics.startNotifications();
+          document.getElementById('start').disabled = true;
+          document.getElementById('stop').disabled = false;
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      const stopNotification = async () => {
+        try {
+          await characteristics.stopNotifications();
+          document.getElementById('start').disabled = false;
+          document.getElementById('stop').disabled = true;
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      const disconnect = async () => {
+        try {
+          await bluetoothDeviceDetected.gatt.disconnect();
+          document.getElementById('start').disabled = true;
+          document.getElementById('stop').disabled = true;
+          document.getElementById('disconnect').disabled = true;
+          document.getElementById('scan').disabled = false;
+          console.log('disconnected');
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      const ctx = document.getElementById('myChart');
+      const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [1],
+          datasets: [
+            {
+              label: 'int8',
+              backgroundColor: 'transparent',
+              borderColor: 'rgb(0, 145, 0)',
+              data: [],
+              hidden: true,
+            },
+            {
+              label: 'unit8-index(0)',
+              backgroundColor: 'transparent',
+              borderColor: 'rgba(0,204,255)',
+              data: [],
+              hidden: true,
+            },
+            {
+              label: 'unit8-index(1)',
+              backgroundColor: 'transparent',
+              borderColor: 'rgba(153,102,255)',
+              data: [],
+              hidden: true,
+            },
+            {
+              label: 'int16',
+              backgroundColor: 'transparent',
+              borderColor: 'rgba(0,102,255)',
+              data: [],
+            },
+          ],
+        },
+        options: {
+          scales: {
+            xAxes: [
+              {
+                gridLines: {
+                  display: false,
+                  drawBorder: false,
+                },
+                ticks: {
+                  autoSkip: true,
+                  minTicksLimit: 3,
+                  maxTicksLimit: 10,
+                  minRotation: 55,
+                },
+              },
+            ],
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true,
+                  stepSize: 10,
+                },
+              },
+            ],
+          },
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: true,
+            position: 'bottom',
+          },
+          elements: {
+            point: {
+              radius: 1.8,
+              hoverRadius: 6,
+              hoverBorderWidth: 10,
+            },
+          },
+        },
+      });
+      let identity;
+      const counter = document.getElementById('counter');
+      const element = document.getElementById('myprogressBar');
+      let go = true;
+      let back = false;
+      let count = 0;
+      let width = 0;
+      function update() {
+        document.getElementById('stopCouting').disabled = false;
+        document.getElementById('startCouting').disabled = true;
+
+        identity = setInterval(forword, 25);
+
+        function forword() {
+          if (back) {
+            width -= 0.25;
+            element.style.width = width + '%';
+            if (widthArray.includes(width) || width == 0) {
+              count -= 1;
+              counter.innerText = `${count}`;
+            }
+            if (width == 0) {
+              go = true;
+              back = false;
+            }
+          } else if (go || width == 0) {
+            width += 0.25;
+            element.style.width = width + '%';
+
+            if (widthArray.includes(width)) {
+              count += 1;
+              counter.innerText = `${count}`;
+            }
+            if (width == 100) {
+              back = true;
+              go = false;
+            }
+          }
+        }
+      }
+      const stopCouting = () => {
+        clearInterval(identity);
+
+        document.getElementById('startCouting').disabled = false;
+      };
+      const reset = () => {
+        clearInterval(identity);
+        go = true;
+        back = false;
+        count = 0;
+        width = 0;
+        element.style.width = 0 + '%';
+        counter.innerText = `${0}`;
+        document.getElementById('startCouting').disabled = false;
+        document.getElementById('stopCouting').disabled = true;
+      };
+      const setStartPoint = () => {
+        isStart = true;
+        startPoint = calValue;
+        testStartPoint = testClpration;
+        startPosition = endPosition - testStartPoint;
+      };
+      const setEndPoint = () => {
+        isStart = false;
+        endPoint = calValue;
+        testEndPoint = testClpration;
+        endPosition = (position / 100) * endPoint - testStartPoint;
+      };
+      const resetCalibration = () => {
+        isStart = false;
+        calValue = null;
+        startPoint = null;
+        endPoint = null;
+        testClpration = null;
+        testStartPoint = 0;
+        testEndPoint = null;
+        startNewCalValue = null;
+        endNewCalValue = null;
+        position = 2048;
+        startPosition = null;
+        endPosition = 2048;
+      };
+    </script>
+  </body>
+</html>
