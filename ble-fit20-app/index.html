@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>BLE-TEST</title>
     <style>
-      canvas {
+/*       canvas {
         max-height: 350px;
       }
       #int8 {
@@ -20,7 +20,7 @@
       }
       #unit16 {
         color: rgba(0, 102, 255);
-      }
+      } */
       #counter {
         text-align: center;
         width: 50%;
@@ -117,7 +117,7 @@
       }
     </style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
+<!--     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script> -->
   </head>
   <body>
     <div>BLE TEST APP</div>
@@ -127,13 +127,13 @@
       <button id="stop" onclick="stopNotification()" disabled>stop</button>
       <button id="disconnect" onclick="disconnect()" disabled>disconnect</button>
     </div>
-    <canvas id="myChart" width="400" height="400"></canvas>
-    <ul>
+<!--     <canvas id="myChart" width="400" height="400"></canvas> -->
+<!--     <ul>
       <li id="int8"></li>
       <li id="unit8-index0"></li>
       <li id="unit8-index1"></li>
       <li id="unit16"></li>
-    </ul>
+    </ul> -->
     <br />
 
     <div id="counter">0</div>
@@ -351,38 +351,38 @@
           afterDeviceProgressBar.style.backgroundColor = deviceProgressBar.style.backgroundColor;
         }
 
-        myChart.data.labels.push(myChart.data.labels.length + 1);
-        myChart.data.datasets[0].data.push(value.getInt8(1));
-        myChart.data.datasets[1].data.push(value.getUint8(0));
-        myChart.data.datasets[2].data.push(value.getUint8(1));
-        myChart.data.datasets[3].data.push(value.getInt16());
+//         myChart.data.labels.push(myChart.data.labels.length + 1);
+//         myChart.data.datasets[0].data.push(value.getInt8(1));
+//         myChart.data.datasets[1].data.push(value.getUint8(0));
+//         myChart.data.datasets[2].data.push(value.getUint8(1));
+//         myChart.data.datasets[3].data.push(value.getInt16());
 
-        if (myChart.data.labels.length == 250) {
-          myChart.data.labels.shift();
-          myChart.data.datasets[0].data.shift();
-          myChart.data.datasets[1].data.shift();
-          myChart.data.datasets[2].data.shift();
-          myChart.data.datasets[3].data.shift();
-        }
-        myChart.update();
+//         if (myChart.data.labels.length == 250) {
+//           myChart.data.labels.shift();
+//           myChart.data.datasets[0].data.shift();
+//           myChart.data.datasets[1].data.shift();
+//           myChart.data.datasets[2].data.shift();
+//           myChart.data.datasets[3].data.shift();
+//         }
+//         myChart.update();
 
-        let int8Max = Math.max(...myChart.data.datasets[0].data);
-        let int8Min = Math.min(...myChart.data.datasets[0].data);
-        let unit8Index0Max = Math.max(...myChart.data.datasets[1].data);
-        let unit8Index0Min = Math.min(...myChart.data.datasets[1].data);
-        let unit8Index1Max = Math.max(...myChart.data.datasets[2].data);
-        let unit8Index1Min = Math.min(...myChart.data.datasets[2].data);
-        let unit16Max = Math.max(...myChart.data.datasets[3].data);
-        let unit16Min = Math.min(...myChart.data.datasets[3].data);
+//         let int8Max = Math.max(...myChart.data.datasets[0].data);
+//         let int8Min = Math.min(...myChart.data.datasets[0].data);
+//         let unit8Index0Max = Math.max(...myChart.data.datasets[1].data);
+//         let unit8Index0Min = Math.min(...myChart.data.datasets[1].data);
+//         let unit8Index1Max = Math.max(...myChart.data.datasets[2].data);
+//         let unit8Index1Min = Math.min(...myChart.data.datasets[2].data);
+//         let unit16Max = Math.max(...myChart.data.datasets[3].data);
+//         let unit16Min = Math.min(...myChart.data.datasets[3].data);
 
-        document.getElementById('int8').innerHTML = `int8 : Max:${int8Max} ,Min:${int8Min}`;
-        document.getElementById(
-          'unit8-index0',
-        ).innerHTML = `unit8-index0 : Max:${unit8Index0Max} ,Min:${unit8Index0Min}`;
-        document.getElementById(
-          'unit8-index1',
-        ).innerHTML = `unit8-index1 : Max:${unit8Index1Max} ,Min:${unit8Index1Min}`;
-        document.getElementById('unit16').innerHTML = `int16 : Max:${unit16Max} ,Min:${unit16Min}`;
+//         document.getElementById('int8').innerHTML = `int8 : Max:${int8Max} ,Min:${int8Min}`;
+//         document.getElementById(
+//           'unit8-index0',
+//         ).innerHTML = `unit8-index0 : Max:${unit8Index0Max} ,Min:${unit8Index0Min}`;
+//         document.getElementById(
+//           'unit8-index1',
+//         ).innerHTML = `unit8-index1 : Max:${unit8Index1Max} ,Min:${unit8Index1Min}`;
+//         document.getElementById('unit16').innerHTML = `int16 : Max:${unit16Max} ,Min:${unit16Min}`;
       };
       const scan = async e => {
         try {
@@ -422,81 +422,81 @@
         }
       };
 
-      const ctx = document.getElementById('myChart');
-      const myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: [1],
-          datasets: [
-            {
-              label: 'int8',
-              backgroundColor: 'transparent',
-              borderColor: 'rgb(0, 145, 0)',
-              data: [],
-              hidden: true,
-            },
-            {
-              label: 'unit8-index(0)',
-              backgroundColor: 'transparent',
-              borderColor: 'rgba(0,204,255)',
-              data: [],
-              hidden: true,
-            },
-            {
-              label: 'unit8-index(1)',
-              backgroundColor: 'transparent',
-              borderColor: 'rgba(153,102,255)',
-              data: [],
-              hidden: true,
-            },
-            {
-              label: 'int16',
-              backgroundColor: 'transparent',
-              borderColor: 'rgba(0,102,255)',
-              data: [],
-            },
-          ],
-        },
-        options: {
-          scales: {
-            xAxes: [
-              {
-                gridLines: {
-                  display: false,
-                  drawBorder: false,
-                },
-                ticks: {
-                  autoSkip: true,
-                  minTicksLimit: 3,
-                  maxTicksLimit: 10,
-                  minRotation: 55,
-                },
-              },
-            ],
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true,
-                  stepSize: 10,
-                },
-              },
-            ],
-          },
-          responsive: true,
-          maintainAspectRatio: false,
-          legend: {
-            display: true,
-            position: 'bottom',
-          },
-          elements: {
-            point: {
-              radius: 1.8,
-              hoverRadius: 6,
-              hoverBorderWidth: 10,
-            },
-          },
-        },
-      });
+//       const ctx = document.getElementById('myChart');
+//       const myChart = new Chart(ctx, {
+//         type: 'line',
+//         data: {
+//           labels: [1],
+//           datasets: [
+//             {
+//               label: 'int8',
+//               backgroundColor: 'transparent',
+//               borderColor: 'rgb(0, 145, 0)',
+//               data: [],
+//               hidden: true,
+//             },
+//             {
+//               label: 'unit8-index(0)',
+//               backgroundColor: 'transparent',
+//               borderColor: 'rgba(0,204,255)',
+//               data: [],
+//               hidden: true,
+//             },
+//             {
+//               label: 'unit8-index(1)',
+//               backgroundColor: 'transparent',
+//               borderColor: 'rgba(153,102,255)',
+//               data: [],
+//               hidden: true,
+//             },
+//             {
+//               label: 'int16',
+//               backgroundColor: 'transparent',
+//               borderColor: 'rgba(0,102,255)',
+//               data: [],
+//             },
+//           ],
+//         },
+//         options: {
+//           scales: {
+//             xAxes: [
+//               {
+//                 gridLines: {
+//                   display: false,
+//                   drawBorder: false,
+//                 },
+//                 ticks: {
+//                   autoSkip: true,
+//                   minTicksLimit: 3,
+//                   maxTicksLimit: 10,
+//                   minRotation: 55,
+//                 },
+//               },
+//             ],
+//             yAxes: [
+//               {
+//                 ticks: {
+//                   beginAtZero: true,
+//                   stepSize: 10,
+//                 },
+//               },
+//             ],
+//           },
+//           responsive: true,
+//           maintainAspectRatio: false,
+//           legend: {
+//             display: true,
+//             position: 'bottom',
+//           },
+//           elements: {
+//             point: {
+//               radius: 1.8,
+//               hoverRadius: 6,
+//               hoverBorderWidth: 10,
+//             },
+//           },
+//         },
+//       });
       let identity;
       const counter = document.getElementById('counter');
       const element = document.getElementById('myprogressBar');
