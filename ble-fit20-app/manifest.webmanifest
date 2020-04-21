@@ -1,6 +1,6 @@
 {
-  "short_name": "fit20",
-  "name": "fit20",
+  "short_name": "BLE-TEST",
+  "name": "BLE-TEST",
   "icons": [
     {
       "src": "/my-ble-test-app/ble-fit20-app/fit20-icon.png",
