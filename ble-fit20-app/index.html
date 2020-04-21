@@ -4,6 +4,15 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" sizes="128x128" href="fit20-icon.png" />
+    <meta name="theme-color" content="#a3cc21" />
+    <!-- Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#a3cc21" />
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="#a3cc21" />
     <title>BLE-TEST</title>
     <style>
 /*       canvas {
@@ -172,6 +181,16 @@
     <button onclick="setEndPoint()">>></button>
     <button onclick="resetCalibration()">Reset</button>
     <script type="text/javascript">
+       const registerSW = async () => {
+        if ('serviceWorker' in navigator) {
+          try {
+            await navigator.serviceWorker.register('./sw.js');
+          } catch (e) {
+            console.log(`SW registration failed`);
+          }
+        }
+      };
+      registerSW();
       const getDeviceInfo = async () => {
         let option = {
           acceptAllDevices: true,
