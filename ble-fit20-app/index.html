@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="#a3cc21" />
     <title>BLE-TEST</title>
     <style>
-/*       canvas {
+      /*       canvas {
         max-height: 350px;
       }
       #int8 {
@@ -30,51 +30,65 @@
       #unit16 {
         color: rgba(0, 102, 255);
       } */
+      .container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
       #counter {
         text-align: center;
-        width: 50%;
+        width: 100%;
       }
       .flexBar {
         display: flex;
-        width: 50vw;
+        width: 80vw;
         background-color: #ddd;
+        border-radius: 5px;
       }
       #Progress_Status {
-        width: 80vw;
+        width: 90vw;
         position: static;
         /* background-color: #ddd; */
       }
       #beforProgress_Status {
-        width: 20vw;
+        width: 10vw;
         border-right: 1px dashed black;
         background-color: #ddd;
+        /* border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px; */
       }
       #afterProgress_Status {
-        width: 20vw;
+        width: 10vw;
         background-color: #ddd;
         border-left: 1px dashed black;
+        border-bottom-right-radius: 5px;
+        border-top-right-radius: 5px;
       }
       #myprogressBar {
         width: 0%;
-        height: 30px;
+        height: 50px;
         background-color: #797979;
       }
       #beforprogressBar {
         width: 100%;
-        height: 30px;
+        height: 50px;
         background-color: #797979;
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
       }
       #afterprogressBar {
         width: 0%;
-        height: 30px;
+        height: 50px;
       }
       #mainDeviceProgressBar {
-        width: 50vw;
+        width: 80vw;
         display: flex;
         background-color: #ddd;
+        border-radius: 5px;
       }
       #deviceProgress_Status {
-        width: 40vw;
+        width: 65.6vw;
         /* background-color: #ddd; */
       }
       #deviceProgressBar::before {
@@ -84,104 +98,110 @@
         left: 0vw;
         bottom: 0px;
         width: 0;
-        height: 30px;
+        height: 50px;
         border-right: 1px dashed rgb(0, 0, 0);
       }
       #deviceProgressBar::after {
         content: '';
         display: block;
         position: relative;
-        left: 33.2vw;
+        left: 65.5vw;
         bottom: 0px;
         width: 0;
-        top: -30px;
-        height: 30px;
+        top: -50px;
+        height: 50px;
         border-right: 1px dashed rgb(0, 0, 0);
       }
       #deviceProgressBar {
         width: 0%;
-        height: 30px;
+        height: 50px;
         background-color: hsl(120, 100%, 45%);
         transition: background-color 0.5s linear;
       }
       #befor-ProgressBar {
-        width: 10vw;
+        width: 7vw;
       }
       #beforDeviceProgressBar {
         width: 100%;
-        height: 30px;
+        height: 50px;
         background-color: hsl(120, 100%, 45%);
         transition: background-color 0.5s linear;
         /* background-color: rgb(255, 0, 0); */
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
       }
       #after-ProgressBar {
-        width: 10vw;
+        width: 7vw;
       }
       #afterDeviceProgressBar {
         width: 0%;
-        height: 30px;
+        height: 50px;
         background-color: hsl(0, 100%, 50%);
         transition: background-color 0.5s linear;
         /* background-color: rgb(255, 0, 0); */
+        border-bottom-right-radius: 5px;
+        border-top-right-radius: 5px;
       }
     </style>
 
-<!--     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script> -->
+    <!--     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script> -->
   </head>
   <body>
     <div>BLE TEST APP</div>
-    <div class="bottons">
-      <button id="scan" onclick="scan()">scan</button>
-      <button id="start" onclick="startNotification()" disabled>start</button>
-      <button id="stop" onclick="stopNotification()" disabled>stop</button>
-      <button id="disconnect" onclick="disconnect()" disabled>disconnect</button>
-    </div>
-<!--     <canvas id="myChart" width="400" height="400"></canvas> -->
-<!--     <ul>
+    <div class="container">
+      <div class="bottons">
+        <button id="scan" onclick="scan()">scan</button>
+        <button id="start" onclick="startNotification()" disabled>start</button>
+        <button id="stop" onclick="stopNotification()" disabled>stop</button>
+        <button id="disconnect" onclick="disconnect()" disabled>disconnect</button>
+      </div>
+      <!--     <canvas id="myChart" width="400" height="400"></canvas> -->
+      <!--     <ul>
       <li id="int8"></li>
       <li id="unit8-index0"></li>
       <li id="unit8-index1"></li>
       <li id="unit16"></li>
     </ul> -->
-    <br />
+      <br />
 
-    <div id="counter">0</div>
-    <div class="flexBar">
-      <div id="beforProgress_Status">
-        <div id="beforprogressBar"></div>
+      <div id="counter">0</div>
+      <div class="flexBar">
+        <div id="beforProgress_Status">
+          <div id="beforprogressBar"></div>
+        </div>
+        <div id="Progress_Status">
+          <div id="myprogressBar"></div>
+        </div>
+        <div id="afterProgress_Status">
+          <div id="afterprogressBar"></div>
+        </div>
       </div>
-      <div id="Progress_Status">
-        <div id="myprogressBar"></div>
+      <br />
+
+      <button onclick="update()" id="startCouting">Start</button>
+      <button onclick="stopCouting()" id="stopCouting" disabled>Stop</button>
+      <button onclick="reset()">Reset</button>
+      <br />
+      <br />
+      <div id="mainDeviceProgressBar">
+        <div id="befor-ProgressBar">
+          <div id="beforDeviceProgressBar"></div>
+        </div>
+        <div id="deviceProgress_Status">
+          <div id="deviceProgressBar"></div>
+        </div>
+        <div id="after-ProgressBar">
+          <div id="afterDeviceProgressBar"></div>
+        </div>
       </div>
-      <div id="afterProgress_Status">
-        <div id="afterprogressBar"></div>
-      </div>
+      <br />
+
+      <button onclick="setStartPoint()" id="stopCouting"><<</button>
+      <button onclick="setEndPoint()">>></button>
+      <button onclick="resetCalibration()">Reset</button>
     </div>
-    <br />
-
-    <button onclick="update()" id="startCouting">Start</button>
-    <button onclick="stopCouting()" id="stopCouting" disabled>Stop</button>
-    <button onclick="reset()">Reset</button>
-    <br />
-    <br />
-    <div id="mainDeviceProgressBar">
-      <div id="befor-ProgressBar">
-        <div id="beforDeviceProgressBar"></div>
-      </div>
-      <div id="deviceProgress_Status">
-        <div id="deviceProgressBar"></div>
-      </div>
-      <div id="after-ProgressBar">
-        <div id="afterDeviceProgressBar"></div>
-      </div>
-    </div>
-    <br />
-
-    <button onclick="setStartPoint()" id="stopCouting"><<</button>
-    <button onclick="setEndPoint()">>></button>
-    <button onclick="resetCalibration()">Reset</button>
     <script type="text/javascript">
-       const registerSW = async () => {
+      const registerSW = async () => {
         if ('serviceWorker' in navigator) {
           try {
             await navigator.serviceWorker.register('./sw.js');
@@ -261,7 +281,7 @@
       let startPosition;
       let endPosition = 2048;
       let widthArray = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-      const handelChangedValue = event => {
+      const handelChangedValue = (event) => {
         let value = event.target.value;
 
         calValue = (((value.getUint8(0) & 0x07) * 256 + value.getUint8(1)) * 100) / 2048;
@@ -284,36 +304,39 @@
           if (isStart) {
             deviceProgressBar.style.width = startNewCalValue + '%';
             if (startNewCalValue > 101) {
-              if (startNewCalValue > 120) {
-                startNewCalValue = 120;
+              if (startNewCalValue > 115) {
+                startNewCalValue = 115;
               }
               deviceProgressBar.style.width = 100 + '%';
-              afterDeviceProgressBar.style.width = (startNewCalValue - 100) * 5 + '%';
+              afterDeviceProgressBar.style.width = (startNewCalValue - 100) * 7 + '%';
             } else {
               afterDeviceProgressBar.style.width = 0 + '%';
             }
             if (startNewCalValue < 0) {
               deviceProgressBar.style.width = 0 + '%';
               beforDeviceProgressBar.style.width =
-                100 - startNewCalValue * -5 < 0 ? 0 + '%' : +100 - startNewCalValue * -5 + '%';
+                100 - startNewCalValue * -7 < 0 ? 0 + '%' : +100 - startNewCalValue * -7 + '%';
             } else {
               beforDeviceProgressBar.style.width = 100 + '%';
             }
           } else {
             deviceProgressBar.style.width = endNewCalValue + '%';
             if (endNewCalValue > 101) {
-              if (endNewCalValue > 120) {
-                endNewCalValue = 120;
+              // console.log(endNewCalValue);
+              if (endNewCalValue > 115) {
+                endNewCalValue = 115;
               }
               deviceProgressBar.style.width = 100 + '%';
-              afterDeviceProgressBar.style.width = (endNewCalValue - 100) * 5 + '%';
+              afterDeviceProgressBar.style.width = (endNewCalValue - 100) * 7 + '%';
             } else {
               afterDeviceProgressBar.style.width = 0 + '%';
             }
             if (endNewCalValue < 0) {
+              // console.log(endNewCalValue);
               deviceProgressBar.style.width = 0 + '%';
               beforDeviceProgressBar.style.width =
-                100 - endNewCalValue * -5 < 0 ? 0 + '%' : 100 - startNewCalValue * -5 + '%';
+                100 - endNewCalValue * -7 < 0 ? 0 + '%' : 100 - endNewCalValue * -7 + '%';
+              // console.log(beforDeviceProgressBar.style.width);
             } else {
               beforDeviceProgressBar.style.width = 100 + '%';
             }
@@ -370,40 +393,40 @@
           afterDeviceProgressBar.style.backgroundColor = deviceProgressBar.style.backgroundColor;
         }
 
-//         myChart.data.labels.push(myChart.data.labels.length + 1);
-//         myChart.data.datasets[0].data.push(value.getInt8(1));
-//         myChart.data.datasets[1].data.push(value.getUint8(0));
-//         myChart.data.datasets[2].data.push(value.getUint8(1));
-//         myChart.data.datasets[3].data.push(value.getInt16());
+        //         myChart.data.labels.push(myChart.data.labels.length + 1);
+        //         myChart.data.datasets[0].data.push(value.getInt8(1));
+        //         myChart.data.datasets[1].data.push(value.getUint8(0));
+        //         myChart.data.datasets[2].data.push(value.getUint8(1));
+        //         myChart.data.datasets[3].data.push(value.getInt16());
 
-//         if (myChart.data.labels.length == 250) {
-//           myChart.data.labels.shift();
-//           myChart.data.datasets[0].data.shift();
-//           myChart.data.datasets[1].data.shift();
-//           myChart.data.datasets[2].data.shift();
-//           myChart.data.datasets[3].data.shift();
-//         }
-//         myChart.update();
+        //         if (myChart.data.labels.length == 250) {
+        //           myChart.data.labels.shift();
+        //           myChart.data.datasets[0].data.shift();
+        //           myChart.data.datasets[1].data.shift();
+        //           myChart.data.datasets[2].data.shift();
+        //           myChart.data.datasets[3].data.shift();
+        //         }
+        //         myChart.update();
 
-//         let int8Max = Math.max(...myChart.data.datasets[0].data);
-//         let int8Min = Math.min(...myChart.data.datasets[0].data);
-//         let unit8Index0Max = Math.max(...myChart.data.datasets[1].data);
-//         let unit8Index0Min = Math.min(...myChart.data.datasets[1].data);
-//         let unit8Index1Max = Math.max(...myChart.data.datasets[2].data);
-//         let unit8Index1Min = Math.min(...myChart.data.datasets[2].data);
-//         let unit16Max = Math.max(...myChart.data.datasets[3].data);
-//         let unit16Min = Math.min(...myChart.data.datasets[3].data);
+        //         let int8Max = Math.max(...myChart.data.datasets[0].data);
+        //         let int8Min = Math.min(...myChart.data.datasets[0].data);
+        //         let unit8Index0Max = Math.max(...myChart.data.datasets[1].data);
+        //         let unit8Index0Min = Math.min(...myChart.data.datasets[1].data);
+        //         let unit8Index1Max = Math.max(...myChart.data.datasets[2].data);
+        //         let unit8Index1Min = Math.min(...myChart.data.datasets[2].data);
+        //         let unit16Max = Math.max(...myChart.data.datasets[3].data);
+        //         let unit16Min = Math.min(...myChart.data.datasets[3].data);
 
-//         document.getElementById('int8').innerHTML = `int8 : Max:${int8Max} ,Min:${int8Min}`;
-//         document.getElementById(
-//           'unit8-index0',
-//         ).innerHTML = `unit8-index0 : Max:${unit8Index0Max} ,Min:${unit8Index0Min}`;
-//         document.getElementById(
-//           'unit8-index1',
-//         ).innerHTML = `unit8-index1 : Max:${unit8Index1Max} ,Min:${unit8Index1Min}`;
-//         document.getElementById('unit16').innerHTML = `int16 : Max:${unit16Max} ,Min:${unit16Min}`;
+        //         document.getElementById('int8').innerHTML = `int8 : Max:${int8Max} ,Min:${int8Min}`;
+        //         document.getElementById(
+        //           'unit8-index0',
+        //         ).innerHTML = `unit8-index0 : Max:${unit8Index0Max} ,Min:${unit8Index0Min}`;
+        //         document.getElementById(
+        //           'unit8-index1',
+        //         ).innerHTML = `unit8-index1 : Max:${unit8Index1Max} ,Min:${unit8Index1Min}`;
+        //         document.getElementById('unit16').innerHTML = `int16 : Max:${unit16Max} ,Min:${unit16Min}`;
       };
-      const scan = async e => {
+      const scan = async (e) => {
         try {
           await getConnection(e);
         } catch (err) {
@@ -441,81 +464,81 @@
         }
       };
 
-//       const ctx = document.getElementById('myChart');
-//       const myChart = new Chart(ctx, {
-//         type: 'line',
-//         data: {
-//           labels: [1],
-//           datasets: [
-//             {
-//               label: 'int8',
-//               backgroundColor: 'transparent',
-//               borderColor: 'rgb(0, 145, 0)',
-//               data: [],
-//               hidden: true,
-//             },
-//             {
-//               label: 'unit8-index(0)',
-//               backgroundColor: 'transparent',
-//               borderColor: 'rgba(0,204,255)',
-//               data: [],
-//               hidden: true,
-//             },
-//             {
-//               label: 'unit8-index(1)',
-//               backgroundColor: 'transparent',
-//               borderColor: 'rgba(153,102,255)',
-//               data: [],
-//               hidden: true,
-//             },
-//             {
-//               label: 'int16',
-//               backgroundColor: 'transparent',
-//               borderColor: 'rgba(0,102,255)',
-//               data: [],
-//             },
-//           ],
-//         },
-//         options: {
-//           scales: {
-//             xAxes: [
-//               {
-//                 gridLines: {
-//                   display: false,
-//                   drawBorder: false,
-//                 },
-//                 ticks: {
-//                   autoSkip: true,
-//                   minTicksLimit: 3,
-//                   maxTicksLimit: 10,
-//                   minRotation: 55,
-//                 },
-//               },
-//             ],
-//             yAxes: [
-//               {
-//                 ticks: {
-//                   beginAtZero: true,
-//                   stepSize: 10,
-//                 },
-//               },
-//             ],
-//           },
-//           responsive: true,
-//           maintainAspectRatio: false,
-//           legend: {
-//             display: true,
-//             position: 'bottom',
-//           },
-//           elements: {
-//             point: {
-//               radius: 1.8,
-//               hoverRadius: 6,
-//               hoverBorderWidth: 10,
-//             },
-//           },
-//         },
-//       });
+      //       const ctx = document.getElementById('myChart');
+      //       const myChart = new Chart(ctx, {
+      //         type: 'line',
+      //         data: {
+      //           labels: [1],
+      //           datasets: [
+      //             {
+      //               label: 'int8',
+      //               backgroundColor: 'transparent',
+      //               borderColor: 'rgb(0, 145, 0)',
+      //               data: [],
+      //               hidden: true,
+      //             },
+      //             {
+      //               label: 'unit8-index(0)',
+      //               backgroundColor: 'transparent',
+      //               borderColor: 'rgba(0,204,255)',
+      //               data: [],
+      //               hidden: true,
+      //             },
+      //             {
+      //               label: 'unit8-index(1)',
+      //               backgroundColor: 'transparent',
+      //               borderColor: 'rgba(153,102,255)',
+      //               data: [],
+      //               hidden: true,
+      //             },
+      //             {
+      //               label: 'int16',
+      //               backgroundColor: 'transparent',
+      //               borderColor: 'rgba(0,102,255)',
+      //               data: [],
+      //             },
+      //           ],
+      //         },
+      //         options: {
+      //           scales: {
+      //             xAxes: [
+      //               {
+      //                 gridLines: {
+      //                   display: false,
+      //                   drawBorder: false,
+      //                 },
+      //                 ticks: {
+      //                   autoSkip: true,
+      //                   minTicksLimit: 3,
+      //                   maxTicksLimit: 10,
+      //                   minRotation: 55,
+      //                 },
+      //               },
+      //             ],
+      //             yAxes: [
+      //               {
+      //                 ticks: {
+      //                   beginAtZero: true,
+      //                   stepSize: 10,
+      //                 },
+      //               },
+      //             ],
+      //           },
+      //           responsive: true,
+      //           maintainAspectRatio: false,
+      //           legend: {
+      //             display: true,
+      //             position: 'bottom',
+      //           },
+      //           elements: {
+      //             point: {
+      //               radius: 1.8,
+      //               hoverRadius: 6,
+      //               hoverBorderWidth: 10,
+      //             },
+      //           },
+      //         },
+      //       });
       let identity;
       const counter = document.getElementById('counter');
       const element = document.getElementById('myprogressBar');
